@@ -7,7 +7,15 @@ the blockchain work at Regen.
 
 ## Public References
 
-TODO: tutorial, abci guide, etc
+In order to get a high-level overview of building cosmos-sdk apps, I can recommend
+you [watch this video](https://www.youtube.com/watch?v=pyAmxlzVdqM) if you like that.
+Then [go through this tutorial](https://cosmos.network/docs/tutorial/) to get a general
+feel of how to tie together all the pieces, and what these words like "Module",
+"Handler", "Keeper", "Codec" means in the cosmos-sdk.
+
+To get some better context of how this sdk modules fit into a blockchain, you should
+read a bit of [the sdk architecture overview](https://cosmos.network/docs/intro/) and
+also an [introduction to tendermint](https://tendermint.com/docs/introduction/what-is-tendermint.html#tendermint-vs-x).
 
 ## Module strucutre
 
