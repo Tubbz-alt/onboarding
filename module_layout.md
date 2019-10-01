@@ -64,7 +64,7 @@ interfaces in `exported`, even after a refactor. The typical way is to provide a
 assertion. (Note that exported should not pull in other modules to avoid circular imports).
 `var _ exported.Keeper = (*Keeper)(nil)`
 
-An example can be seen in commit `e06e69ee3` (TODO: link)
+An example can be seen in commit `2133c2448` (TODO: link)
 
 ## Client
 
@@ -79,6 +79,10 @@ If they ever remove go-amino and use some standard encoding, client libraries wi
 directly and this whole LCD / rest server infrastructure will no longer be needed.
 
 **TODO** link to docs
+
+Note that we **cannot** import the top-level package from cli. You will probably want to use
+some import like `upgrade "github.com/cosmos/cosmos-sdk/x/upgrade/internal/types"` to pull
+in all the internal types you need to implement this.
 
 ### Cli
 
@@ -95,6 +99,8 @@ This general flow can be seen in the [relatively simple cancel proposal tx](http
 ### Rest
 
 **TODO** I'm still not sure best practices here
+
+An example can be seen in commit `1553d75cd` (TODO: link)
 
 ## Top Level Module
 
@@ -148,3 +154,31 @@ the same as the name of the directory. This should usually be the case, just a w
 
 Hopefully now you got the `alias.go` file set up. This is a lot of time now, but hopefully will be a time savings
 in the future, when you create more modules.
+
+### Handler
+
+The public-facing form of the keeper is the handler. This takes a message from a user, checks authentication,
+and dispatches the proper actions. Include all `Handlers` on the top level. Handler is defined as
+`type Handler func(ctx Context, msg Msg) Result`, and they are usually implemented as closures
+that are bound to the Keeper instance to do the dispatch. (You can also use a struct and
+then return `h.Handle` method to implement the `Handler` type - same effect as a closure, just
+different syntax).
+
+### ABCI
+
+If you have BeginBlocker or EndBlocker implementations, you should include them in `abci.go`.
+These are called at the beginning or end of every block, rather than just in response to
+a transaction (as in Handler), so make sure they are very optimized especially with a quick
+exit for the no-op use case.
+
+As in `Handler`, they will likely want to use a closure to capture a `Keeper` variable.
+The core logic should be done in the Keeper, but any abci specific code can happen here
+to make the `Keeper` as easy to test as possible.
+
+### Module
+
+This is the main entry point to pull all the existing code into one place so we can "easily"
+plug it into app.go. This should have next to no logic and just import and dispatch to the
+other functions.
+
+An example can be seen in commit `fcbaa4eb7` (TODO: link)
